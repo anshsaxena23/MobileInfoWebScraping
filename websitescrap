@@ -1,22 +1,60 @@
 import requests
 from bs4 import BeautifulSoup
-#page = requests.get("https://www.gsmarena.com/nokia_x6-9178.php")
-x = "https://www.gsmarena.com/huawei_nova_3-9267.php"
-#x = "https://www.gsmarena.com/nokia_x6-9178.php"
-print(x)
-page = requests.get(x)
+def printf(abc):
+    i = 0
+    print("-----------------------------------------")
+    for elements in abc:
+        if( i == 0 ):
+            print(elements)
+            print("-----------------------------------------")
+            i = i+1
+        else :
+            print(elements)
+            i = i+1
+    print("-----------------------------------------")
+    
+def deffunc(x):
+    page = requests.get(x)
+    soup = BeautifulSoup(page.content, 'html.parser')
+    body = list(soup.children)
+    specsdet = soup.find(id="specs-list")
+    specs = list(specsdet.find_all('table'))
+    abc = []
+    a = soup.find_all('meta')[1].attrs
+    b = a.get("content", "none").split(',')
+    #print(b[0].split('.')[0])
+    abc.append(b[0].split('.')[0])
+    for element in specs:
+        for tr in element.find_all('tr'):
+            for td in tr.find_all('td'):
+                abc.append(td.text)
+                #print(td.text)
+    printf(abc)
+    #print(abc)
+aName = input('Please enter the phone you want to search : ')
+aNamee = aName.replace(' ', '+')
+assignurl = "https://www.gsmarena.com/res.php3?sSearch="+aNamee
+print("Searching For : "+assignurl)
+print("Searching For Phones related to keywords : "+aName)
+gotlinks = []
+page = requests.get(assignurl)
 soup = BeautifulSoup(page.content, 'html.parser')
 body = list(soup.children)
-specsdet = soup.find(id="specs-list")
-specs = list(specsdet.find_all('table'))
-abc = []
-a = soup.find_all('meta')[1].attrs
-b = a.get("content", "none").split(',')
-#print(b[0].split('.')[0])
-abc.append(b[0].split('.')[0])
-for element in specs:
-    for tr in element.find_all('tr'):
-        for td in tr.find_all('td'):
-            abc.append(td.text)
-            #print(td.text)
-print(abc)
+links = list(body[2].find_all('ul'))
+fulinks = list(links[2].find_all('li'))
+for elements in fulinks:
+    a = elements.find_all('a')[0].attrs
+    #print(a)
+    b = a.get("href", "none")
+    #print(b)
+    gotlinks.append("https://www.gsmarena.com/"+b)
+#page = requests.get("https://www.gsmarena.com/nokia_x6-9178.php")
+#x = "https://www.gsmarena.com/huawei_nova_3-9267.php"
+#x = "https://www.gsmarena.com/nokia_x6-9178.php"
+for elements in gotlinks :
+    x = elements
+    print(x)
+    deffunc(x)
+    
+
+
